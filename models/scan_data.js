@@ -13,7 +13,7 @@ const Scan_Data = sequelize.define("Scan_Data", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    precentage: {
+    percentage: {
         type: DataTypes.INTEGER,
         allowNull: true
     },

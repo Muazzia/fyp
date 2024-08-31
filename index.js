@@ -2,6 +2,7 @@ require("express-async-errors")
 require("dotenv").config();
 const express = require("express");
 const sequelize = require("./database");
+require("./association")
 const router = require("./routes");
 const app = express();
 

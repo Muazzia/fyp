@@ -19,11 +19,13 @@ const uploadScanImage = async (req, res) => {
     // generate temp so every request will have probability 
     // for having cancer and no cancer.
     const temp = Math.random() >= 0.5;
+
     let obj = {};
     if (temp) {
+        const percentage = Math.floor(Math.random() * 100) + 1
         obj = {
             image: data,
-            percentage: Math.floor(Math.random() * 100) + 1,
+            percentage,
             title: "Benign",
             description: "This is test description.",
             userId
@@ -38,15 +40,15 @@ const uploadScanImage = async (req, res) => {
         }
     }
 
-    const scan_date = await Scan_Data.create({ ...obj });
+    const scan_data = await Scan_Data.create({ ...obj });
 
-    const tempData = await Scan_Data.findByPk(scan_date.id, {
+    const tempData = await Scan_Data.findByPk(scan_data.id, {
         include: [
-            { model: User, attributes: [] }
+            { model: User, attributes: ["email", "firstName", "lastName", "profilePic"], as: "user" }
         ]
     })
 
-    return res.status(201).send(resWrapper("Scan Result", 201, scan_date))
+    return res.status(201).send(resWrapper("Scan Result", 201, tempData))
 
 }
 
