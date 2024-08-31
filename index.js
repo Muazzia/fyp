@@ -23,7 +23,7 @@ async function main() {
         console.log('Connection has been established successfully.');
 
         const port = process.env.PORT || 8080;
-        app.listen(port, () => {
+        app.listen(port, "0.0.0.0", () => {
             console.log("Server is Listening on Port", port)
         })
     } catch (error) {

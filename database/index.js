@@ -4,7 +4,7 @@ const { Sequelize } = require("sequelize")
 
 // const sequelize = new Sequelize('postgres://postgres:pass@example.com:5432/dbname')
 
-const sequelize = new Sequelize(db, {
+const sequelize = new Sequelize(process.env.DB, {
     logging: false
 })
 
