@@ -14,7 +14,7 @@ const createUserSchema = Joi.object({
         .messages({
             'string.pattern.base': 'phoneNumber must be a numeric string with a maximum length of 11',
             'string.max': 'phoneNumber must have a maximum length of 11',
-        }).required(),
+        }),
 })
 
 const validateCreateUser = (body) => createUserSchema.validate(body);

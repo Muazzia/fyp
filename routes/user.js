@@ -1,5 +1,4 @@
 const express = require("express");
-const { uploadImages } = require("../middleware/multer");
 const { createUser, login } = require("../controller/user");
 const userRouter = express.Router();
 
