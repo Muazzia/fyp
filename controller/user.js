@@ -1,8 +1,6 @@
 const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
 const User = require("../models/user");
 const { validateCreateUser, validateUserLogin } = require("../joiSchemas/user");
-const { uploadSingleToCloudinary } = require("../utils/cloudinary");
 const { resWrapper, generateJwtToken } = require("../utils");
 
 const includeObj = {
@@ -22,14 +20,10 @@ const createUser = async (req, res) => {
     });
     if (oldUser) return res.status(400).send(resWrapper("User With Email ALready Exist", 400, null, "Email With User Already Exist"));
 
-    const { isSuccess, data, error: cloudError } = await uploadSingleToCloudinary(req.file, "user")
-    console.log(isSuccess)
-    if (!isSuccess) return res.status(400).send(resWrapper("Failed to upload image", 400, null, cloudError));
-
     const hashedPassword = await bcrypt.hash(password, 10);
     if (!hashedPassword) return res.status(400).send(resWrapper("Error While Saving. Trying Again", 400, null, "Please Try Again Later"))
 
-    const user = await User.create({ firstName, lastName, email, password: hashedPassword, profilePic: data, phoneNumber });
+    const user = await User.create({ firstName, lastName, email, password: hashedPassword, phoneNumber });
 
     const temp = await User.findByPk(user.id, {
         ...includeObj

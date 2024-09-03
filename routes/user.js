@@ -5,7 +5,7 @@ const userRouter = express.Router();
 
 
 
-userRouter.post("/", uploadImages({ fieldName: "profilePic", isSinlge: true }), createUser)
+userRouter.post("/", createUser)
 userRouter.post("/login", login)
 
 module.exports = userRouter
