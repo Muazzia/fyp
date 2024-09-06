@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken")
+const validator = require("validator")
 
 const resWrapper = (message, status, data, error = null) => {
     if (error) {
@@ -25,8 +26,18 @@ const generateJwtToken = (user) => {
     return token
 }
 
+const isValidUuid = (id, res) => {
+    if (!validator.isUUID(id)) {
+        res.status(400).send(resWrapper("Invalid ID format", 400, null, "ID is not a valid UUID"));
+        return false;
+    }
+    return true;
+};
+
+
 
 module.exports = {
     resWrapper,
-    generateJwtToken
+    generateJwtToken,
+    isValidUuid
 }

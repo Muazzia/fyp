@@ -73,47 +73,6 @@ const uploadMultipleToCloudinary = async (files, folderName) => {
     }
 }
 
-
-const uploadToCloudinary = (file, folderPath) => {
-    const uploadOptions = {
-        resource_type: "auto",
-        folder: folderPath,
-        quality: file.size > 2 * 1024 * 1024 ? 50 : 60, // Adjust the quality value as needed (default is 80)
-    };
-
-    // if folder path given to upload on the specific folder
-    if (folderPath) {
-        return new Promise((resolve, reject) => {
-            // Use the `upload` method from the Cloudinary SDK
-            cloudinary.uploader
-                .upload_stream(uploadOptions, (error, result) => {
-                    if (error) {
-                        console.error("Error in Cloudinary upload:", error);
-                        reject({ error });
-                    } else {
-                        console.log("Cloudinary Response:", result);
-                        resolve({ secure_url: result.secure_url });
-                    }
-                })
-                .end(file.buffer);
-        });
-    }
-    return new Promise((resolve, reject) => {
-        // Use the `upload` method from the Cloudinary SDK
-        cloudinary.uploader
-            .upload_stream(uploadOptions, (error, result) => {
-                if (error) {
-                    console.error("Error in Cloudinary upload:", error);
-                    reject({ error });
-                } else {
-                    console.log("Cloudinary Response:", result);
-                    resolve({ secure_url: result.secure_url });
-                }
-            })
-            .end(file.buffer);
-    });
-};
-
 const deleteFromCloudinary = async (url) => {
     try {
         // console.log('exra', url.split('/'));
