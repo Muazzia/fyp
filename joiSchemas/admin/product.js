@@ -6,6 +6,7 @@ const createProductSchema = Joi.object({
     price: Joi.number().max(999999999),
     category: Joi.string().max(255).required(),
     skinCondition: Joi.array().items(Joi.string()).min(1).required(),
+    stock: Joi.number().max(9999999)
 });
 
 const validateCreateProduct = (body) => createProductSchema.validate(body);
