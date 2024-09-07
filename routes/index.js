@@ -5,6 +5,7 @@ const imageRouter = require("./image");
 const { checkJWT, adminCheckJWT } = require("../middleware/authentication");
 const adminRouter = require("./admin");
 const nonAdminRoutes = require("./admin/nonAdminRoutes");
+const orderRouter = require("./order");
 const router = express.Router();
 
 
@@ -12,6 +13,7 @@ router.use("/user", userRouter)
 router.use("/user/image", checkJWT, imageRouter)
 
 router.use("/admin", adminCheckJWT, adminRouter)
+router.use("/order", checkJWT, orderRouter)
 router.use("/", checkJWT, nonAdminRoutes)
 
 
