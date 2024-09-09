@@ -9,7 +9,7 @@ const { uploadSingleToCloudinary } = require("../utils/cloudinary");
 const uploadScanImage = async (req, res) => {
     const userId = req.userId;
 
-    const { isSuccess, data, error: cloudError } = await uploadSingleToCloudinary(req.file, "scan_date")
+    const { isSuccess, data, error: cloudError } = await uploadSingleToCloudinary(req.file, "scan_data")
     if (!isSuccess) return res.status(400).send(resWrapper("Failed to upload image", 400, null, cloudError));
 
     // Now comes the logic with ai Model. The image will be given to the model
