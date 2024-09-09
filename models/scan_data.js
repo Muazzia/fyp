@@ -31,7 +31,8 @@ const Scan_Data = sequelize.define("Scan_Data", {
         references: {
             model: User,
             key: "id"
-        }
+        },
+        onDelete: "CASCADE"
     }
 });
 
