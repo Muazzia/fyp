@@ -49,7 +49,7 @@ const deleteAOrder = async (req, res) => {
     const userId = req.userId;
     const id = req.params.id;
 
-    if (!isValidUuid(id)) return;
+    if (!isValidUuid(id, res)) return;
 
     const order = await Order.findOne({
         where: {
@@ -59,11 +59,39 @@ const deleteAOrder = async (req, res) => {
         ...includeObj
     });
     if (!order) return res.status(400).send(resWrapper("Order Not Found.", 404, null, "Id is not valid"))
+
     if (order.status !== "pending") return res.status(400).send(resWrapper("Orders Can be Deleted Only when pending.", 400, null, "Order can't be deletd After status is pending"));
 
+    let skip = false;
+    const result = await sequelize.transaction(async t => {
+        const allOrderedProducts = await OrderedProducts.findAll({
+            where: {
+                orderId: order.id
+            }
+        });
 
-    await order.destroy();
-    return res.status(200).send(resWrapper("Order Deleted Successfully", 200, order))
+        for (const orderedProduct of allOrderedProducts) {
+            if (skip) break;
+            const productId = orderedProduct.productId;
+
+            // Add the ordered quantity back to the stock
+            const product = await Product.findByPk(productId);
+            if (!product) {
+                skip = true
+                return res.status(400).send(resWrapper("Invalid Uuid", 400, null, `Product with ID ${productId} not found`))
+            }
+
+            const newQuantity = product.stock + orderedProduct.count;
+            await product.update({ stock: newQuantity }, { transaction: t });
+        }
+
+
+        await order.destroy({ transaction: t });
+
+        return order;
+    })
+
+    return res.status(200).send(resWrapper("Order Deleted Successfully", 200, result))
 }
 
 const createAnOrder = async (req, res) => {
