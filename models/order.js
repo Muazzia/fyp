@@ -15,6 +15,7 @@ const Order = sequelize.define('Order', {
             model: User,
             key: 'id',
         },
+        onDelete: "CASCADE"
     },
     totalAmount: {
         type: DataTypes.DECIMAL(10, 2),
