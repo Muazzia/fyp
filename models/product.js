@@ -16,7 +16,7 @@ const Product = sequelize.define("Product", {
         type: DataTypes.TEXT, // Detailed description of the product
     },
     price: {
-        type: DataTypes.DECIMAL(10, 2), // Price with 2 decimal points
+        type: DataTypes.DOUBLE,
         allowNull: false,
     },
     category: {
