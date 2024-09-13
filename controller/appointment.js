@@ -1,0 +1,69 @@
+const { validateCreateAppointment } = require("../joiSchemas/appointment");
+const Appointment = require("../models/appointment");
+const Doctor = require("../models/doctor");
+const User = require("../models/user");
+const { resWrapper, isValidUuid } = require("../utils")
+
+const createAppointment = async (req, res) => {
+    const { error, value: { appointmentDate, timeSlot, doctorId } } = validateCreateAppointment(req.body)
+    if (error) return res.status(400).send(resWrapper(error.message, 400, null, error.message));
+
+    const userId = req.userId;
+
+    if (!isValidUuid(userId, res)) return;
+    if (!isValidUuid(doctorId, res)) return;
+
+    const user = await User.findByPk(userId);
+    const doctor = await Doctor.findByPk(doctorId);
+
+    if (!user) return res.status(404).send(resWrapper("User Id is not Valid", 404, null, "User Id is not Valid"))
+    if (!doctor) return res.status(404).send(resWrapper("Doctor Id is not Valid", 404, null, "Doctor Id is not Valid"))
+
+    const appointDate = new Date(appointmentDate)
+
+    const chkAppointment = await Appointment.findOne({
+        where: {
+            doctorId,
+            appointmentDate: appointDate,
+            timeSlot
+        }
+    });
+
+    if (chkAppointment) return res.status(400).send(resWrapper("Time Slot Is Not Available", 400, null, "Time Slot Is Not Available"))
+
+
+    // /////////////////
+
+    const todayDate = new Date();
+    const givenDate = appointDate;
+
+    todayDate.setHours(0, 0, 0, 0);
+    givenDate.setHours(0, 0, 0, 0);
+
+    if (givenDate < todayDate) return res.status(400).send(resWrapper("Date must be of today's are forward", 400, null, "Date Error"))
+
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const day = daysOfWeek[appointDate.getDay()].toLowerCase();
+
+    const chkDocAvail = doctor.availableDays.includes(day);
+
+    if (!chkDocAvail) return res.status(400).send(resWrapper("Appointment Date is Invalid", 400, null, "Appointment Date is Invalid"));
+
+    // /////////////////
+
+    const chkTimeSlotAvail = doctor.availableTimeSlots.includes(timeSlot);
+    if (!chkTimeSlotAvail) return res.status(400).send(resWrapper("Invalid Time Slot", 400, null, "Invalid Time Slot"))
+
+    const appointment = await Appointment.create({
+        userId,
+        doctorId,
+        timeSlot,
+        appointmentDate
+    });
+
+    const temp = await Appointment.findByPk(appointment.id);
+
+    return res.status(200).send(resWrapper("Appointment Created Successfully", 200, temp));
+};
+
+module.exports = { createAppointment }

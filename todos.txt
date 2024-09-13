@@ -4,3 +4,14 @@
 3. Need to create order post api.        done
 
 4. Need To Setup the association in order and chk all the apis of order. done
+
+5. Create the admin side of the orders where he can change the status of the order.
+
+
+6. Only show the doctors profile and hide the availabel dates and days. When the user clicks on the profile then only he can select the date from today onwards on week. The api will hit with the date and the doctor Id. The bakend will chk the is doctor available on that day. If yes then return the slots other wise say no slot availebl. done
+
+7. Create the appointment api. when the user givens the date and slot chk if there is already appointment. if yes return error if no chk the doctor date by week day and slot. If it is available the make the request to the doctor.
+
+8. CHange the default value of appointment creation to request sent kind of thing
+
+9. Remove availabel Slots from teh get slots api if the appointment is already created for the slot
