@@ -7,6 +7,7 @@ const adminRouter = require("./admin");
 const nonAdminRoutes = require("./admin/nonAdminRoutes");
 const orderRouter = require("./order");
 const doctorRouter = require("./doctor");
+const appointment = require("./appointment");
 const router = express.Router();
 
 
@@ -18,7 +19,7 @@ router.use("/order", checkJWT, orderRouter)
 router.use("/", checkJWT, nonAdminRoutes)
 
 router.use("/doctor", doctorRouter)
-
+router.use("/appointment", checkJWT, appointment)
 
 router.use((err, req, res, next) => {
     console.log("internal server error: ", err)

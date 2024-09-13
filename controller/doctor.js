@@ -1,11 +1,11 @@
 const bcrypt = require("bcrypt")
-const { resWrapper, generateJwtToken } = require("../utils");
-const { validateCreateDoctor, validateDoctorLogin } = require("../joiSchemas/doctor");
+const { resWrapper, generateJwtToken, isValidUuid } = require("../utils");
+const { validateCreateDoctor, validateDoctorLogin, validateGetTimeSlotOfADoctorByDate } = require("../joiSchemas/doctor");
 const Doctor = require("../models/doctor");
 
 const includeObj = {
     attributes: {
-        exclude: ["password"]
+        exclude: ["password", "availableTimeSlots", "availableDays"]
     }
 }
 
@@ -55,18 +55,6 @@ const createDoctor = async (req, res) => {
 
 
 
-    // const { error, value: { firstName, lastName, email, password, phoneNumber } } = validateCreateUser(req.body);
-    // if (error) return res.status(400).send(resWrapper(error.message, 400, null, error.message));
-
-    // const oldUser = await User.findOne({
-    //     where: {
-    //         email
-    //     }
-    // });
-    // if (oldUser) return res.status(400).send(resWrapper("User With Email ALready Exist", 400, null, "Email With User Already Exist"));
-
-
-
 
 
 }
@@ -93,7 +81,65 @@ const doctorLogin = async (req, res) => {
     return res.status(200).send(resWrapper("Logged In", 200, { doctor: doctorWithoutPassword, token }));
 }
 
+const getAllDoctors = async (req, res) => {
+    const doctor = await Doctor.findAll({
+        ...includeObj,
+    });
+
+    return res.status(200).send(resWrapper("All Doctors Fetched", 200, doctor))
+}
+
+const getASingleDoctor = async (req, res) => {
+    const id = req.params.id;
+    if (!isValidUuid(id, res)) return;
+
+    const doctor = await Doctor.findByPk(id, {
+        ...includeObj
+    });
+
+    if (!doctor) return res.status(400).send(resWrapper("Id is not Valid", 400, null, "Doctor not Found"));
+
+    return res.status(200).send(resWrapper("Doctor Reterived", 200, doctor));
+}
+
+const getTimeSlotOfADoctorByDate = async (req, res) => {
+    const id = req.params.id;
+    if (!isValidUuid(id, res)) return;
+
+    const { error, value: { date } } = validateGetTimeSlotOfADoctorByDate(req.body)
+    if (error) return res.status(400).send(resWrapper(error.message, 400, null, error.message))
+
+    const doctor = await Doctor.findByPk(id, {
+        attributes: {
+            exclude: ["password"]
+        }
+    });
+    if (!doctor) return res.status(400).send(resWrapper("Id is not Valid", 400, null, "Doctor not Found"));
+
+    const docDate = new Date(date);
+
+    const todayDate = new Date();
+    const givenDate = docDate;
+
+    todayDate.setHours(0, 0, 0, 0);
+    givenDate.setHours(0, 0, 0, 0);
+
+    if (givenDate < todayDate) return res.status(400).send(resWrapper("Date must be of today's are forward", 400, null, "Date Error"))
+
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const day = daysOfWeek[docDate.getDay()].toLowerCase();
+
+    const chkDocAvail = doctor.availableDays.includes(day);
+
+    if (!chkDocAvail) return res.status(200).send(resWrapper("No Time Slot Available", 200, []));
+
+    return res.status(200).send(resWrapper("asdf", 200, doctor.availableTimeSlots))
+}
+
 module.exports = {
     createDoctor,
-    doctorLogin
+    doctorLogin,
+    getAllDoctors,
+    getASingleDoctor,
+    getTimeSlotOfADoctorByDate,
 }
