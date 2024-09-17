@@ -2,6 +2,8 @@ const bcrypt = require("bcrypt")
 const { resWrapper, generateJwtToken, isValidUuid } = require("../utils");
 const { validateCreateDoctor, validateDoctorLogin, validateGetTimeSlotOfADoctorByDate } = require("../joiSchemas/doctor");
 const Doctor = require("../models/doctor");
+const Appointment = require("../models/appointment");
+
 
 const includeObj = {
     attributes: {
@@ -118,9 +120,9 @@ const getTimeSlotOfADoctorByDate = async (req, res) => {
 
     const docDate = new Date(date);
 
+
     const todayDate = new Date();
     const givenDate = docDate;
-
     todayDate.setHours(0, 0, 0, 0);
     givenDate.setHours(0, 0, 0, 0);
 
@@ -133,7 +135,22 @@ const getTimeSlotOfADoctorByDate = async (req, res) => {
 
     if (!chkDocAvail) return res.status(200).send(resWrapper("No Time Slot Available", 200, []));
 
-    return res.status(200).send(resWrapper("asdf", 200, doctor.availableTimeSlots))
+    const allAppointmentsOnThisDay = await Appointment.findAll({
+        where: {
+            doctorId: id,
+            appointmentDate: date
+        },
+        attributes: ["timeSlot"]
+    })
+
+    if (allAppointmentsOnThisDay.length === 0) return res.status(200).send(resWrapper("Reterived All Time Slots", 200, doctor.availableTimeSlots));
+
+
+    const bookedTimeSlots = allAppointmentsOnThisDay.map(appointment => appointment.timeSlot);
+    const remainingTimeSlots = doctor.availableTimeSlots.filter(timeSlot => !bookedTimeSlots.includes(timeSlot));
+
+
+    return res.status(200).send(resWrapper("Reterived All Time Slots", 200, remainingTimeSlots))
 }
 
 module.exports = {

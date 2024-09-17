@@ -21,10 +21,11 @@ const createAppointment = async (req, res) => {
 
     const appointDate = new Date(appointmentDate)
 
+
     const chkAppointment = await Appointment.findOne({
         where: {
             doctorId,
-            appointmentDate: appointDate,
+            appointmentDate,
             timeSlot
         }
     });
@@ -49,7 +50,6 @@ const createAppointment = async (req, res) => {
 
     if (!chkDocAvail) return res.status(400).send(resWrapper("Appointment Date is Invalid", 400, null, "Appointment Date is Invalid"));
 
-    // /////////////////
 
     const chkTimeSlotAvail = doctor.availableTimeSlots.includes(timeSlot);
     if (!chkTimeSlotAvail) return res.status(400).send(resWrapper("Invalid Time Slot", 400, null, "Invalid Time Slot"))

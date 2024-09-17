@@ -28,7 +28,7 @@ const Appointment = sequelize.define('Appointment', {
         onDelete: "CASCADE"
     },
     appointmentDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
     },
     timeSlot: {
