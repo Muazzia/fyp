@@ -64,4 +64,34 @@ function adminCheckJWT(req, res, next) {
 }
 
 
-module.exports = { checkJWT, adminCheckJWT };
+function chkDoctorJwt(req, res, next) {
+    try {
+        console.log("in doctor midd")
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).send(resWrapper("Unauthorized: Token not available", 401, "", "Unauthorized: Token not available"))
+        }
+        const accessToken = authHeader.split(" ")[1];
+        console.log(process.env.JWT_DOCTOR_SECRET_KEY, accessToken)
+        jwt.verify(accessToken, process.env.JWT_DOCTOR_SECRET_KEY, async (err, decoded) => {
+            if (err) {
+                console.error("JWT verification failed:", err.message);
+                return res.status(401).send(resWrapper("Unauthorized: Invalid token", 401, "", "Unauthorized: Invalid token"))
+            } else {
+                req.userEmail = decoded.email;
+                req.userId = decoded.doctorId
+                // const user = await userModel.findByPk(req.userEmail);
+                // if (!user) return res.status(404).send(resWrapper("User dosn't Exist", 404, "", "User not Found"))
+                // if (!req.isPassReset && !user.isEmailVerified) return res.status(401).json({ error: "Unauthorized: Email Not Verified" })
+                // if (user.isBlocked) return res.status(401).send(resWrapper("Blocked Can't Access", 401, "", "User is Blocked"))
+                next();
+            }
+        });
+    } catch (error) {
+        console.log("error", error)
+        res.status(500).send(resWrapper("Internal Server Error. During Authenticaion in Middleware", 500, "Server Error"));
+    }
+}
+
+
+module.exports = { checkJWT, adminCheckJWT, chkDoctorJwt };

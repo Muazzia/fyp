@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt")
-const { resWrapper, generateJwtToken, isValidUuid } = require("../utils");
+const { resWrapper, isValidUuid, convertTimeRangesToSlots, generateDoctorJwtToken } = require("../utils");
 const { validateCreateDoctor, validateDoctorLogin, validateGetTimeSlotOfADoctorByDate } = require("../joiSchemas/doctor");
 const Doctor = require("../models/doctor");
 const Appointment = require("../models/appointment");
@@ -12,20 +12,6 @@ const includeObj = {
 }
 
 
-const convertTimeRangesToSlots = (timeRanges, sessionDurationMinutes) => {
-    const timeSlots = [];
-
-    for (let timeRange of timeRanges) {
-        const [start, end] = timeRange.split("-");
-
-        for (let hour = start; hour < end; hour++) {
-            timeSlots.push(`${String(hour).padStart(2, '0')}:00`);
-            timeSlots.push(`${String(hour).padStart(2, '0')}:30`);
-        }
-    }
-
-    return timeSlots;
-}
 
 
 
@@ -74,10 +60,10 @@ const doctorLogin = async (req, res) => {
 
     if (!doctor) return res.status(400).send(resWrapper("Email or Password Incorrect", 400, null, "Authorization Error"));
 
-    const passChk = await bcrypt.compare(password, user.password);
+    const passChk = await bcrypt.compare(password, doctor.password);
     if (!passChk) return res.status(400).send(resWrapper("Email or Password Incorrect", 400, null, "Authorization Error"))
 
-    const token = generateJwtToken(user);
+    const token = generateDoctorJwtToken(doctor);
 
     const { password: _, ...doctorWithoutPassword } = doctor.toJSON();
     return res.status(200).send(resWrapper("Logged In", 200, { doctor: doctorWithoutPassword, token }));
