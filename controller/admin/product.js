@@ -18,7 +18,7 @@ const getAProduct = async (req, res) => {
     const product = await Product.findByPk(id)
     if (!product) return res.status(404).send(resWrapper("Product Didn't Found", 404, null, "Id Is Not Valid"))
 
-    return res.status(200).send("Product Reterived", 200, product)
+    return res.status(200).send(resWrapper("Product Reterived", 200, product))
 };
 
 const deleteAProduct = async (req, res) => {

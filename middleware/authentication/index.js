@@ -11,7 +11,7 @@ function checkJWT(req, res, next) {
         jwt.verify(accessToken, process.env.JWT_SECRET_KEY, async (err, decoded) => {
             if (err) {
                 console.error("JWT verification failed:", err.message);
-                return res.status(401).send(resWrapper("Unauthorized: Invalid token", 401, "", "Unauthorized: Invalid token"))
+                return res.status(401).send(resWrapper("Unauthorized: Invalid User token", 401, "", "Unauthorized: Invalid User token"))
             } else {
                 req.userEmail = decoded.email;
                 req.userId = decoded.userId
@@ -67,13 +67,11 @@ function adminCheckJWT(req, res, next) {
 
 function chkDoctorJwt(req, res, next) {
     try {
-        console.log("in doctor midd")
         const authHeader = req.headers.authorization;
         if (!authHeader) {
             return res.status(401).send(resWrapper("Unauthorized: Token not available", 401, "", "Unauthorized: Token not available"))
         }
         const accessToken = authHeader.split(" ")[1];
-        console.log(process.env.JWT_DOCTOR_SECRET_KEY, accessToken)
         jwt.verify(accessToken, process.env.JWT_DOCTOR_SECRET_KEY, async (err, decoded) => {
             if (err) {
                 console.error("JWT verification failed:", err.message);

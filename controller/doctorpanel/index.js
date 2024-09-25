@@ -1,4 +1,5 @@
 const { validateUpdateDoctor } = require("../../joiSchemas/doctorpanel");
+const Appointment = require("../../models/appointment");
 const Doctor = require("../../models/doctor");
 const { resWrapper, isValidUuid, convertTimeRangesToSlots } = require("../../utils");
 const bcrypt = require("bcrypt")
@@ -31,7 +32,22 @@ const updateDoctor = async (req, res) => {
     return res.status(200).send(resWrapper("Product Updated", 200, temp));
 }
 
+const getAllAppointments = async (req, res) => {
+    const doctorId = req.userId;
+
+    const appointment = await Appointment.findAll({
+        where: {
+            doctorId
+        }
+    });
+
+    return res.status(200).send(resWrapper("All Appointments Retreived", 200, appointment));
+}
+
+
+
 
 module.exports = {
-    updateDoctor
+    updateDoctor,
+    getAllAppointments
 };

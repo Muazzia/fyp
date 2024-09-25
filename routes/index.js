@@ -13,16 +13,21 @@ const router = express.Router();
 
 
 router.use("/user", userRouter)
-router.use("/user/image", checkJWT, imageRouter)
 
 router.use("/admin", adminRouter)
+
+router.use("/personal/doctor", chkDoctorJwt, doctorPanelRoutes)
+
+
+router.use("/user/image", checkJWT, imageRouter)
+
 router.use("/order", checkJWT, orderRouter)
-router.use("/", checkJWT, nonAdminRoutes)
 
 router.use("/appointment", checkJWT, appointment)
 
 router.use("/doctor", doctorRouter)
-router.use("/personal/doctor", chkDoctorJwt, doctorPanelRoutes)
+
+router.use("/", checkJWT, nonAdminRoutes)
 
 
 router.use((err, req, res, next) => {
