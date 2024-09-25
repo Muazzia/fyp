@@ -86,12 +86,12 @@ const deleteAOrder = async (req, res) => {
         }
 
 
-        await order.destroy({ transaction: t });
+        await order.update({ status: "cancelled" }, { transaction: t });
 
         return order;
     })
 
-    return res.status(200).send(resWrapper("Order Deleted Successfully", 200, result))
+    return res.status(200).send(resWrapper("Order Cancelled Successfully", 200, result))
 }
 
 const createAnOrder = async (req, res) => {
