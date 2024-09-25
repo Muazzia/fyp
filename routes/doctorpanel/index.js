@@ -1,5 +1,5 @@
 const express = require("express");
-const { updateDoctor, getAllAppointments } = require("../../controller/doctorpanel");
+const { updateDoctor, getAllAppointments, updateStatusOfAppointment } = require("../../controller/doctorpanel");
 const doctorPanelRoutes = express.Router();
 
 
@@ -10,7 +10,7 @@ doctorPanelRoutes.put("/", updateDoctor)
 doctorPanelRoutes.get("/appointments", getAllAppointments)
 
 // can cancel appointment
-doctorPanelRoutes.put("/appointments");
+doctorPanelRoutes.put("/appointments/:id", updateStatusOfAppointment);
 
 
 module.exports = doctorPanelRoutes

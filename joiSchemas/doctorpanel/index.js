@@ -20,6 +20,13 @@ const updateDoctorSchema = Joi.object({
 
 const validateUpdateDoctor = (body) => updateDoctorSchema.validate(body);
 
+const updateAppointmentSchema = Joi.object({
+    status: Joi.string().valid("cancelled", "completed").required()
+});
+
+const validateUpdateAppointmentSchema = (body) => updateAppointmentSchema.validate(body);
+
 module.exports = {
-    validateUpdateDoctor
+    validateUpdateDoctor,
+    validateUpdateAppointmentSchema
 }
