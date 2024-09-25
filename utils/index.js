@@ -34,6 +34,14 @@ const generateDoctorJwtToken = (doctor) => {
     return token
 }
 
+const generateAdminJwtToken = (admin) => {
+    const jwtSecret = process.env.JWT_ADMIN_SECRET_KEY
+    const token = jwt.sign({ email: admin.email, userId: admin.id, isAdmin: true }, jwtSecret, {
+        expiresIn: process.env.JWT_EXPIRY,
+    });
+    return token
+}
+
 const isValidUuid = (id, res) => {
     if (!validator.isUUID(id)) {
         res.status(400).send(resWrapper("Invalid ID format", 400, null, "ID is not a valid UUID"));
@@ -65,5 +73,6 @@ module.exports = {
     generateJwtToken,
     generateDoctorJwtToken,
     isValidUuid,
-    convertTimeRangesToSlots
+    convertTimeRangesToSlots,
+    generateAdminJwtToken
 }
