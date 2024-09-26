@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt")
+const { Op } = require("sequelize")
 const { resWrapper, isValidUuid, convertTimeRangesToSlots, generateDoctorJwtToken } = require("../utils");
 const { validateCreateDoctor, validateDoctorLogin, validateGetTimeSlotOfADoctorByDate } = require("../joiSchemas/doctor");
 const Doctor = require("../models/doctor");
@@ -70,9 +71,35 @@ const doctorLogin = async (req, res) => {
 }
 
 const getAllDoctors = async (req, res) => {
-    const doctor = await Doctor.findAll({
-        ...includeObj,
-    });
+    const { name, specialization } = req.query;
+
+    let doctor;
+    if (Object.keys(req.query).length) {
+        let whereClause = {};
+
+        if (name) {
+            whereClause[Op.or] = [
+                { firstName: { [Op.iLike]: `%${name}%` } },
+                { lastName: { [Op.iLike]: `%${name}%` } }
+            ];
+        }
+
+        // Filter by specialization
+        if (specialization) {
+            whereClause.specialization = { [Op.iLike]: `%${specialization}%` };
+        }
+
+
+        doctor = await Doctor.findAll({
+            where: whereClause,
+            ...includeObj
+        });
+
+    } else {
+        doctor = await Doctor.findAll({
+            ...includeObj,
+        });
+    }
 
     return res.status(200).send(resWrapper("All Doctors Fetched", 200, doctor))
 }

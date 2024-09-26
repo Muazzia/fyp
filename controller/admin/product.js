@@ -1,3 +1,4 @@
+const { Op } = require("sequelize")
 const { validateCreateProduct, validateUpdateProduct } = require("../../joiSchemas/admin/product");
 const Product = require("../../models/product");
 const { resWrapper, isValidUuid } = require("../../utils");
@@ -5,7 +6,26 @@ const { uploadSingleToCloudinary } = require("../../utils/cloudinary");
 
 
 const getAllproducts = async (req, res) => {
-    const products = await Product.findAll();
+    const { name, category, skinCondition } = req.query;
+
+    let products;
+    if (Object.keys(req.query).length) {
+        let whereClause = {};
+
+        if (name) {
+            whereClause.name = { [Op.iLike]: `%${name}%` };
+        }
+
+        if (category) {
+            whereClause.category = category;
+        }
+
+        products = await Product.findAll({
+            where: whereClause
+        });
+    } else {
+        products = await Product.findAll();
+    }
 
     return res.status(200).send(resWrapper("All Products", 200, products))
 };
