@@ -4,6 +4,7 @@ const OrderedProducts = require("../../../models/orderedProducts");
 const Product = require("../../../models/product");
 const User = require("../../../models/user");
 const { resWrapper, isValidUuid } = require("../../../utils");
+const { validateUpdateTheOrder } = require("../../../joiSchemas/admin/order");
 
 const includeObj = {
     include: [
@@ -34,6 +35,23 @@ const getAOrderDetail = async (req, res) => {
     if (!order) return res.status(400).send(resWrapper("Order Not Found.", 404, null, "Id is not valid"))
 
     return res.status(200).send(resWrapper("Order Reterived", 200, order))
+}
+
+const updateTheOrder = async (req, res) => {
+    const { error, value } = validateUpdateTheOrder(req.body)
+    if (error) return res.status(400).send(resWrapper(error.message, 400, null, error.message))
+
+    const id = req.params.id;
+    if (!isValidUuid(id, res)) return;
+
+    const order = await Order.findByPk(id);
+    if (!order) return res.status(404).send(resWrapper("Order Not Found", 404, null, "Order Id Is Not Valid"))
+
+    await order.update({ ...value });
+
+    const temp = await Order.findByPk(id, { ...includeObj })
+
+    return res.status(200).send(resWrapper("Order Updated", 200, temp))
 }
 
 const deleteAOrder = async (req, res) => {
@@ -85,8 +103,11 @@ const deleteAOrder = async (req, res) => {
     return res.status(200).send(resWrapper("Order Deleted Successfully", 200, result))
 }
 
+
+
 module.exports = {
     getAllOrders,
     getAOrderDetail,
     deleteAOrder,
+    updateTheOrder
 }
