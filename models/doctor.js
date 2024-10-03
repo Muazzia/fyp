@@ -32,8 +32,16 @@ const Doctor = sequelize.define('Doctor', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    education: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: false
+    },
     specialization: {
-        type: DataTypes.STRING, // Doctor's specialty, e.g., Dermatologist
+        type: DataTypes.ARRAY(DataTypes.STRING), // Doctor's specialty, e.g., Dermatologist
+        allowNull: false
+    },
+    services: {
+        type: DataTypes.ARRAY(DataTypes.STRING), // Doctor's specialty, e.g., Dermatologist
         allowNull: false
     },
     availableDays: {

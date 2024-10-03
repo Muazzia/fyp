@@ -16,7 +16,9 @@ const createDoctorSchema = Joi.object({
             'string.pattern.base': 'phoneNumber must be a numeric string with a maximum length of 11',
             'string.max': 'phoneNumber must have a maximum length of 11',
         }).required(),
-    specialization: Joi.string().max(255).required(),
+    services: Joi.array().items(Joi.string().max(255)).required(),
+    specialization: Joi.array().items(Joi.string().max(255)).required(),
+    education: Joi.array().items(Joi.string().max(255)).required(),
     availableDays: Joi.array().items(Joi.string().valid("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")).required(),
     availableTimeSlots: Joi.array().items(Joi.string().pattern(/^([01]\d|2[0-3])\-([01]\d|2[0-3])$/).message({
         'string.pattern.base': 'Values must in 24 hour format'

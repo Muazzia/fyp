@@ -17,7 +17,7 @@ const includeObj = {
 
 
 const createDoctor = async (req, res) => {
-    const { error, value: { firstName, lastName, email, password, specialization, phoneNumber, availableDays, availableTimeSlots } } = validateCreateDoctor(req.body)
+    const { error, value: { firstName, lastName, email, password, specialization, phoneNumber, availableDays, availableTimeSlots, education, services } } = validateCreateDoctor(req.body)
     if (error) return res.status(400).send(resWrapper(error.message, 400, null, error.message));
 
     const oldDoctor = await Doctor.findOne({
@@ -34,18 +34,13 @@ const createDoctor = async (req, res) => {
 
     const timeSlots = convertTimeRangesToSlots(availableTimeSlots, 30);
 
-    const doctor = await Doctor.create({ firstName, lastName, email, password: hashedPassword, phoneNumber, availableDays, availableTimeSlots: timeSlots, specialization });
+    const doctor = await Doctor.create({ firstName, lastName, email, password: hashedPassword, phoneNumber, availableDays, availableTimeSlots: timeSlots, specialization, education, services });
 
     const temp = await Doctor.findByPk(doctor.id, {
         ...includeObj
     });
 
     return res.status(201).send(resWrapper("Doctor Created", 201, temp))
-
-
-
-
-
 }
 
 const doctorLogin = async (req, res) => {
