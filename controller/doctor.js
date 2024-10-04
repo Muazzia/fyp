@@ -87,7 +87,7 @@ const getAllDoctors = async (req, res) => {
 
         doctor = await Doctor.findAll({
             where: whereClause,
-            // ...includeObj
+            ...includeObj
         });
 
     } else {
