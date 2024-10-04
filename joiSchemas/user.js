@@ -27,7 +27,16 @@ const userLoginSchema = Joi.object({
 
 const validateUserLogin = (body) => userLoginSchema.validate(body)
 
+const resetPasswordSchema = Joi.object({
+    oldPassword: Joi.string().min(8).max(255).required(),
+    newPassword: Joi.string().min(8).max(255).required(),
+    confirmPassword: Joi.string().required().valid(Joi.ref('newPassword')),
+})
+
+const validateResetPassword = (body) => resetPasswordSchema.validate(body);
+
 module.exports = {
     validateCreateUser,
-    validateUserLogin
+    validateUserLogin,
+    validateResetPassword
 }
