@@ -12,7 +12,7 @@ doctorRouter.post("/login", doctorLogin)
 doctorRouter.get("/", checkJWT, getAllDoctors)
 doctorRouter.get("/:id", checkJWT, getASingleDoctor)
 
-doctorRouter.get("/time/:id", checkJWT, getTimeSlotOfADoctorByDate)
+doctorRouter.get("/time/:id/:date", checkJWT, getTimeSlotOfADoctorByDate)
 
 
 

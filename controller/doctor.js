@@ -81,13 +81,13 @@ const getAllDoctors = async (req, res) => {
 
         // Filter by specialization
         if (specialization) {
-            whereClause.specialization = { [Op.iLike]: `%${specialization}%` };
+            whereClause.specialization = { [Op.contains]: [`${specialization}`] };
         }
 
 
         doctor = await Doctor.findAll({
             where: whereClause,
-            ...includeObj
+            // ...includeObj
         });
 
     } else {
@@ -116,7 +116,9 @@ const getTimeSlotOfADoctorByDate = async (req, res) => {
     const id = req.params.id;
     if (!isValidUuid(id, res)) return;
 
-    const { error, value: { date } } = validateGetTimeSlotOfADoctorByDate(req.body)
+    const paramsDate = req.params.date;
+
+    const { error, value: { date } } = validateGetTimeSlotOfADoctorByDate({ date: paramsDate })
     if (error) return res.status(400).send(resWrapper(error.message, 400, null, error.message))
 
     const doctor = await Doctor.findByPk(id, {
