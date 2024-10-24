@@ -33,7 +33,7 @@ function adminCheckJWT(req, res, next) {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader)
-            returnres.status(401).send(resWrapper("Unauthorized: Token not available", 401, "", "Unauthorized: Token not available"))
+            return res.status(401).send(resWrapper("Unauthorized: Token not available", 401, "", "Unauthorized: Token not available"))
 
         const accessToken = authHeader.split(" ")[1];
         const adminInfo = jwt.decode(accessToken);
