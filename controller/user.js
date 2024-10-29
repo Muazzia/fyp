@@ -86,14 +86,7 @@ const forgotPassword = async (req, res) => {
     const { error, value: { email } } = validateForgotPassword(req.body)
     if (error) return res.status(400).send(resWrapper(error.message, 400, null, error.message))
 
-    const user1 = {
-        email: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-        db: process.env.DB,
-        test: "et"
-    }
 
-    return res.status(200).send(user1);
     const user = await User.findOne({ where: { email } });
     if (!user) return res.status(404).json(resWrapper('User not found', 400, null, "User email is not Valid"));
 
