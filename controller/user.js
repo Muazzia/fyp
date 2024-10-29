@@ -88,7 +88,9 @@ const forgotPassword = async (req, res) => {
 
     const user1 = {
         email: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
+        pass: process.env.EMAIL_PASSWORD,
+        db: process.env.DB,
+        test: "et"
     }
 
     return res.status(200).send(user1);
