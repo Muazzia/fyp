@@ -5,7 +5,7 @@ const createProductSchema = Joi.object({
     description: Joi.string().max(1000).required(),
     price: Joi.number().max(999999999).required(),
     category: Joi.string().max(255).required(),
-    skinCondition: Joi.array().items(Joi.string()).min(1).required(),
+    skinCondition: Joi.array().items(Joi.string().max(255)).min(1).required(),
     stock: Joi.number().max(9999999).required()
 });
 
