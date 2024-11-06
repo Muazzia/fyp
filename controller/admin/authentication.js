@@ -120,7 +120,7 @@ const newPassword = async (req, res) => {
     // Step 4: Clean up the used OTP
     await resetEntry.destroy();
 
-    res.status(200).send(resWrapper('Password reset successful', 200, null, 'Password reset successful'));
+    res.status(200).send(resWrapper('Password reset successful', 200, null,));
 }
 
 const resetPassword = async (req, res) => {
