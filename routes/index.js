@@ -27,7 +27,12 @@ router.use("/appointment", checkJWT, appointment)
 
 router.use("/doctor", doctorRouter)
 
-router.use("/", checkJWT, nonAdminRoutes)
+router.use("/", nonAdminRoutes)
+
+
+router.use("*", (req, res) => {
+    res.status(404).send(resWrapper("Route not found check again", 404, null, "Please chk your route."));
+})
 
 
 router.use((err, req, res, next) => {
