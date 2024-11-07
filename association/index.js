@@ -1,3 +1,5 @@
+const Appointment = require("../models/appointment");
+const Doctor = require("../models/doctor");
 const Order = require("../models/order");
 const OrderedProducts = require("../models/orderedProducts");
 const Product = require("../models/product");
@@ -27,3 +29,10 @@ OrderedProducts.belongsTo(Product, {
     foreignKey: 'productId',
     as: 'product',
 });
+
+
+// User.hasMany(Appointment, { foreignKey: "userId", as: "user" });
+Appointment.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+// Doctor.hasMany(Appointment, { foreignKey: "doctorId", as: "doctor" });
+Appointment.belongsTo(Doctor, { foreignKey: "doctorId", as: "doctor" })

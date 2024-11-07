@@ -66,4 +66,40 @@ const createAppointment = async (req, res) => {
     return res.status(200).send(resWrapper("Appointment Created Successfully", 200, temp));
 };
 
-module.exports = { createAppointment }
+const deleteAppointment = async (req, res) => {
+    const appointmentId = req.params.id;
+    const userId = req.userId;
+
+    const appointment = await Appointment.findOne({
+        where: {
+            userId,
+            id: appointmentId
+        }
+    });
+
+    if (!appointment) return res.status(404).send(resWrapper("Appointment not found", 404, null, "Appoint does not exist"))
+
+
+
+    if (appointment.status !== "scheduled") return res.status(400).send(resWrapper("Appointment can't be cancelled", 400, null, "Appointment cancell error"));
+
+
+    await appointment.destroy();
+    return res.status(200).send(resWrapper("Appointment Cancelled", 200, appointment));
+}
+
+const getAllAppointments = async (req, res) => {
+    const userId = req.userId;
+
+    const appointments = await Appointment.findAll({
+        where: {
+            userId
+        },
+
+        include: [{ model: Doctor, attributes: { exclude: ["password", "availableTimeSlots", "availableDays", ""] }, as: "doctor" }]
+    });
+
+    return res.status(200).send(resWrapper("All Appointments received", 200, appointments));
+}
+
+module.exports = { createAppointment, deleteAppointment, getAllAppointments }
