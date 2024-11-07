@@ -16,7 +16,7 @@ router.use("/user", userRouter)
 
 router.use("/admin", adminRouter)
 
-router.use("/personal/doctor", chkDoctorJwt, doctorPanelRoutes)
+router.use("/personal/doctor", doctorPanelRoutes)
 
 
 router.use("/user/image", checkJWT, imageRouter)
