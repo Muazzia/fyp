@@ -46,8 +46,13 @@ const getAllAppointments = async (req, res) => {
     const appointment = await Appointment.findAll({
         where: {
             doctorId
-        }
+        },
+        include:[
+        { model: User, as: "user", attributes: ["id", "firstName", "lastName", "email", "profilePic"] }
+        ]
     });
+
+
 
     return res.status(200).send(resWrapper("All Appointments Retreived", 200, appointment));
 }
