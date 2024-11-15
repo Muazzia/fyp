@@ -3,6 +3,7 @@ const { validateForgotPassword, validateNewPassword, validateResetPassword } = r
 const Appointment = require("../../models/appointment");
 const Doctor = require("../../models/doctor");
 const DoctorPasswordResetOtp = require("../../models/doctorPasswordResetOtp");
+const User = require("../../models/user");
 const { resWrapper, isValidUuid, convertTimeRangesToSlots } = require("../../utils");
 const { sendEmail } = require("../../utils/nodemailer");
 const bcrypt = require("bcrypt")
