@@ -3,54 +3,91 @@ const User = require("../models/user");
 const { resWrapper } = require("../utils");
 const { uploadSingleToCloudinary } = require("../utils/cloudinary");
 
-
-
-
 const uploadScanImage = async (req, res) => {
-    const userId = req.userId;
+  const userId = req.userId;
 
-    const { isSuccess, data, error: cloudError } = await uploadSingleToCloudinary(req.file, "scan_data")
-    if (!isSuccess) return res.status(400).send(resWrapper("Failed to upload image", 400, null, cloudError));
+  const {
+    isSuccess,
+    data,
+    error: cloudError,
+  } = await uploadSingleToCloudinary(req.file, "scan_data");
+  if (!isSuccess)
+    return res
+      .status(400)
+      .send(resWrapper("Failed to upload image", 400, null, cloudError));
 
-    // Now comes the logic with ai Model. The image will be given to the model
-    // and the model will return us the result. which will be description
+  // Now comes the logic with ai Model. The image will be given to the model
+  // and the model will return us the result. which will be description
 
+  const modelUrl = process.env.MODEL_URL;
+  const modelResponse = await fetch(modelUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      data,
+    }),
+  });
 
-    // generate temp so every request will have probability 
-    // for having cancer and no cancer.
-    const temp = Math.random() >= 0.5;
+  if (modelResponse.status !== 200)
+    return res
+      .status(400)
+      .send(
+        resWrapper(
+          "Failed to get result from model. Please try again.",
+          400,
+          null,
+          "Model can't predict at the moment"
+        )
+      );
 
-    let obj = {};
-    if (temp) {
-        const percentage = Math.floor(Math.random() * 100) + 1
-        obj = {
-            image: data,
-            percentage,
-            title: "Benign",
-            description: "This is test description.",
-            userId
-        }
-    } else {
-        obj = {
-            image: data,
-            percentage: null,
-            title: null,
-            description: "No Cancer Found.",
-            userId
-        }
-    }
+  const modelData = await modelResponse.json();
 
-    const scan_data = await Scan_Data.create({ ...obj });
+  let obj = {};
+  let percentage = modelData.data["confidence_score:"];
+  percentage = Math.floor(percentage * 100);
+  obj = {
+    image: data,
+    percentage,
+    title: modelData.data.class,
+    description: "This is test description.",
+    userId,
+  };
 
-    const tempData = await Scan_Data.findByPk(scan_data.id, {
-        include: [
-            { model: User, attributes: ["email", "firstName", "lastName", "profilePic"], as: "user" }
-        ]
-    })
+  // if (temp) {
+  //     const percentage = Math.floor(Math.random() * 100) + 1
+  //     obj = {
+  //         image: data,
+  //         percentage,
+  //         title: "Benign",
+  //         description: "This is test description.",
+  //         userId
+  //     }
+  // } else {
+  //     obj = {
+  //         image: data,
+  //         percentage: null,
+  //         title: null,
+  //         description: "No Cancer Found.",
+  //         userId
+  //     }
+  // }
 
-    return res.status(201).send(resWrapper("Scan Result", 201, tempData))
+  const scan_data = await Scan_Data.create({ ...obj });
 
-}
+  const tempData = await Scan_Data.findByPk(scan_data.id, {
+    include: [
+      {
+        model: User,
+        attributes: ["email", "firstName", "lastName", "profilePic"],
+        as: "user",
+      },
+    ],
+  });
+
+  return res.status(201).send(resWrapper("Scan Result", 201, tempData));
+};
 
 // const createUser = async (req, res) => {
 //     const { error, value: { firstName, lastName, email, password } } = validateCreateUser(req.body)
@@ -79,5 +116,5 @@ const uploadScanImage = async (req, res) => {
 // }
 
 module.exports = {
-    uploadScanImage
-}
+  uploadScanImage,
+};
