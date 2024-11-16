@@ -3,6 +3,48 @@ const User = require("../models/user");
 const { resWrapper } = require("../utils");
 const { uploadSingleToCloudinary } = require("../utils/cloudinary");
 
+const cancerLabels = {
+  akeic: {
+    name: "AKEIC",
+    description:
+      "A rare cancer associated with the accumulation of abnormal cells in various parts of the body. Further details on this specific type of cancer may need additional clarification.",
+  },
+  bcc: {
+    name: "BASAL CELL CARCINOMA (BCC)",
+    description:
+      "Basal Cell Carcinoma (BCC) is the most common form of skin cancer, often caused by prolonged sun exposure. It usually grows slowly and rarely spreads.",
+  },
+  bkl: {
+    name: "BENIGN KERATOSIS (BKL)",
+    description:
+      "A term likely referring to 'benign keratosis,' a non-cancerous growth on the skin that is often mistaken for early-stage skin cancer but does not spread.",
+  },
+  df: {
+    name: "DESMOPLASTIC FIBROMA (DF)",
+    description:
+      "Desmoplastic Fibroma (DF) is a rare benign tumor typically found in the bone. It consists of collagen-producing cells and is often treated with surgery.",
+  },
+  mel: {
+    name: "MELANOMA",
+    description:
+      "Melanoma is a type of skin cancer that develops from pigment-producing cells called melanocytes. It is more aggressive than other skin cancers and can spread to other parts of the body.",
+  },
+  "non-infected": {
+    name: "NON-INFECTED",
+    description: "No Cancer Found",
+  },
+  nv: {
+    name: "NEVUS (NV)",
+    description:
+      "Nevus (plural: nevi) is a medical term for a mole or birthmark on the skin, often a benign growth. In some cases, nevi can develop into melanoma, so monitoring changes is important.",
+  },
+  vasc: {
+    name: "VASCULAR CANCER (VASC)",
+    description:
+      "Vascular cancers involve abnormal growths in the blood vessels or lymphatic system. One example is Angiosarcoma, a rare and aggressive cancer that originates in the blood vessels.",
+  },
+};
+
 const uploadScanImage = async (req, res) => {
   const userId = req.userId;
 
@@ -45,13 +87,18 @@ const uploadScanImage = async (req, res) => {
   const modelData = await modelResponse.json();
 
   let obj = {};
+
   let percentage = modelData.data["confidence_score:"];
   percentage = Math.floor(percentage * 100);
+
+  const originalClass = modelData.data.class.split("/")[0].trim().toLowerCase();
+  const cancerType = cancerLabels[originalClass];
+
   obj = {
     image: data,
     percentage,
-    title: modelData.data.class,
-    description: "This is test description.",
+    title: cancerType.name,
+    description: cancerType.description,
     userId,
   };
 
