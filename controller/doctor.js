@@ -185,7 +185,10 @@ const getASingleDoctor = async (req, res) => {
   if (!isValidUuid(id, res)) return;
 
   const doctor = await Doctor.findByPk(id, {
-    ...includeObj,
+    // ...includeObj,
+    attributes: {
+      exclude: ["password"],
+    },
   });
 
   if (!doctor)
