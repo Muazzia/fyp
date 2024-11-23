@@ -10,9 +10,11 @@ const {
 } = require("../../controller/doctorpanel");
 const { chkDoctorJwt } = require("../../middleware/authentication");
 const { uploadImages } = require("../../middleware/multer");
+const { getASingleDoctor } = require("../../controller/doctor");
 const doctorPanelRoutes = express.Router();
 
 doctorPanelRoutes.put("/", chkDoctorJwt, updateDoctor);
+doctorPanelRoutes.get("/details/:id", chkDoctorJwt, getASingleDoctor);
 
 // all appointments
 doctorPanelRoutes.get("/appointments", chkDoctorJwt, getAllAppointments);
