@@ -33,6 +33,7 @@ const updateDoctorSchema = Joi.object({
   ),
   clinicAddress: Joi.string().max(255),
   fees: Joi.string().max(255),
+  services: Joi.array().items(Joi.string().max(255)),
 });
 
 const validateUpdateDoctor = (body) => updateDoctorSchema.validate(body);
