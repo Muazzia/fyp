@@ -144,7 +144,11 @@ const doctorLogin = async (req, res) => {
   return res
     .status(200)
     .send(
-      resWrapper("Logged In", 200, { doctor: doctorWithoutPassword, token })
+      resWrapper("Logged In", 200, {
+        doctor: doctorWithoutPassword,
+        token,
+        role: "doctor",
+      })
     );
 };
 

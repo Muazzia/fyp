@@ -122,7 +122,13 @@ const login = async (req, res) => {
   const { password: _, ...userWithoutPassword } = user.toJSON();
   return res
     .status(200)
-    .send(resWrapper("Logged In", 200, { user: userWithoutPassword, token }));
+    .send(
+      resWrapper("Logged In", 200, {
+        user: userWithoutPassword,
+        token,
+        role: "user",
+      })
+    );
 };
 
 const resetPassword = async (req, res) => {
