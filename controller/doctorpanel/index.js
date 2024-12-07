@@ -122,13 +122,19 @@ const updateStatusOfAppointment = async (req, res) => {
       .status(404)
       .send(resWrapper("User Not Found", 404, null, "User"));
 
-  if (value?.status === "cancelled")
+  if (value?.status === "cancelled") {
+    let reason;
+    if (Object.keys(value).includes("reason")) {
+      reason = value.reason;
+    } else {
+      reason = "Availability Issue of the doctor";
+    }
+
     await sendEmail({
       to: user.email,
-      text:
-        `Your Appointment on ${appointment.appointmentDate} has been cancelled due to:` +
-          value?.reason || "Availability Issue of the doctor",
+      text: `Your Appointment on ${appointment.appointmentDate} has been cancelled due to: ${reason}`,
     });
+  }
 
   await appointment.update({ status: value.status });
   return res
