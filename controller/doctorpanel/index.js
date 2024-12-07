@@ -116,7 +116,20 @@ const updateStatusOfAppointment = async (req, res) => {
         )
       );
 
-  await appointment.update({ ...value });
+  const user = await User.findByPk(appointment.userId);
+  if (!user)
+    return res
+      .status(404)
+      .send(resWrapper("User Not Found", 404, null, "User"));
+
+  await sendEmail({
+    to: user.email,
+    text:
+      "Your Appointment has been cancelled due to:" + value?.reason ||
+      "Availability Issue of the doctor",
+  });
+
+  await appointment.update({ status: value.status });
   return res
     .status(200)
     .send(resWrapper("Appointment Updated", 200, appointment));

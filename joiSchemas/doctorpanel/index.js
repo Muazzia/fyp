@@ -40,6 +40,7 @@ const validateUpdateDoctor = (body) => updateDoctorSchema.validate(body);
 
 const updateAppointmentSchema = Joi.object({
   status: Joi.string().valid("cancelled", "completed").required(),
+  reason: Joi.string().optional().max(255),
 });
 
 const validateUpdateAppointmentSchema = (body) =>
